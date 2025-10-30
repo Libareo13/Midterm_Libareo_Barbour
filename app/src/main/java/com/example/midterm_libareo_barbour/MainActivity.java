@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize UI components
         etNumber = findViewById(R.id.etNumber);
         btnGenerate = findViewById(R.id.btnGenerate);
         btnHistory = findViewById(R.id.btnHistory);
@@ -35,42 +34,21 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, currentTable);
         lvTable.setAdapter(adapter);
 
-        // Generate table button
-        btnGenerate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                generateTable();
-            }
-        });
+        btnGenerate.setOnClickListener(v -> generateTable());
+        btnHistory.setOnClickListener(v -> startActivity(new Intent(MainActivity.this, HistoryActivity.class)));
 
-        // Go to HistoryActivity
-        btnHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Delete on click
-        lvTable.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String item = currentTable.get(position);
-                new AlertDialog.Builder(MainActivity.this)
-                        .setTitle("Delete row?")
-                        .setMessage("Do you want to delete:\n" + item)
-                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                currentTable.remove(position);
-                                adapter.notifyDataSetChanged();
-                                Toast.makeText(MainActivity.this, "Deleted: " + item, Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton("Cancel", null)
-                        .show();
-            }
+        lvTable.setOnItemClickListener((parent, view, position, id) -> {
+            String item = currentTable.get(position);
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle("Delete row?")
+                    .setMessage("Do you want to delete:\n" + item)
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        currentTable.remove(position);
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(MainActivity.this, "Deleted: " + item, Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
         });
     }
 
@@ -97,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
-    // Menu for "Clear All"
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -114,9 +91,15 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setTitle("Clear all rows?")
                     .setMessage("This will remove all rows.")
-                    .setPositiveButton("Clear", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            currentTable.clear();
-                            adapter.notifyDataSetChanged();
-                            Toast.makeText(MainActivity.this, "All rows cleared.", Toa
+                    .setPositiveButton("Clear", (dialog, which) -> {
+                        currentTable.clear();
+                        adapter.notifyDataSetChanged();
+                        Toast.makeText(MainActivity.this, "All rows cleared.", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+}
